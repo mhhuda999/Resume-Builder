@@ -1,33 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Resume Builder</title>
-</head>
-<body>
-    <h1>Welcome to My Resume Builder!</h1>
-    <p>AI-powered resumes made easy.</p>
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
     <title>AI Resume Builder</title>
     <style>
-        body { font-family: Arial; text-align: center; margin-top: 50px; }
-        button { padding: 10px 20px; background: #0066ff; color: white; border: none; }
+        body { 
+            font-family: Arial; 
+            text-align: center; 
+            margin-top: 50px; 
+            line-height: 1.6;
+        }
+        button { 
+            padding: 12px 24px; 
+            background: #0066ff; 
+            color: white; 
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0052cc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1>AI Resume Builder</h1>
-    <p>Get a professional resume in minutes!</p>
-    <button onclick="askAI()">Ask AI for Help</button>
+    <div class="container">
+        <h1>AI Resume Builder</h1>
+        <p>Get a professional resume in minutes!</p>
+        <button onclick="askAI()">Ask AI for Help</button>
+    </div>
 
-    <script>
-        function askAI() {
-            const userInput = prompt("Describe your job role (e.g., 'I managed social media'):");
-            alert("AI Suggestion: 'Spearheaded social media campaigns, increasing engagement by 30%'");
-            // (We'll add real AI later!)
+<script>
+    async function askAI() {
+        try {
+            const job = prompt("Describe your job role (e.g., 'I managed social media'):");
+            if (!job) return; // Exit if user cancels
+
+            // Show loading state
+            const btn = document.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+
+            const response = await fetch("http://127.0.0.1:5000/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: job })
+            });
+            const data = await response.json();
+            const suggestion = data.result || "Could not generate suggestion";
+
+            // Reset button state
+            btn.disabled = false;
+            btn.textContent = 'Ask AI for Help';
+
+            alert("AI Suggestion:\n\n" + suggestion);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Sorry, something went wrong. Please try again.");
+            document.querySelector('button').disabled = false;
+            document.querySelector('button').textContent = 'Ask AI for Help';
         }
-    </script>
+    }
+</script>
 </body>
 </html>
